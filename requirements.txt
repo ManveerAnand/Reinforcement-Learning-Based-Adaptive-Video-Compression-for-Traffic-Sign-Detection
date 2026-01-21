@@ -1,0 +1,57 @@
+# =============================================================================
+# RL-Based Adaptive Video Compression - Requirements
+# =============================================================================
+# For reproducibility, we specify exact versions where critical.
+# Python version: 3.12 (recommended), 3.10+ (supported)
+#
+# Installation order:
+# 1. Install PyTorch with CUDA: 
+#    pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu121
+# 2. Install remaining requirements:
+#    pip install -r requirements.txt
+# =============================================================================
+
+# Core Deep Learning (install separately for CUDA support)
+# torch==2.5.1  # Install with CUDA via command above
+# torchvision==0.20.1  # Install with CUDA via command above
+numpy>=1.21.0,<2.0.0
+scipy>=1.7.0
+
+# Computer Vision
+opencv-python>=4.5.0
+scikit-image>=0.18.0
+Pillow>=8.0.0
+
+# Data Handling
+h5py>=3.0.0
+pyyaml>=5.4.0
+einops>=0.4.0
+pandas>=1.3.0
+
+# Metrics and Visualization
+matplotlib>=3.4.0
+seaborn>=0.11.0
+tensorboard>=2.8.0
+
+# Object Detection
+ultralytics>=8.0.0  # YOLOv8/v11
+
+# Reinforcement Learning
+gymnasium>=0.29.0  # Modern replacement for gym
+stable-baselines3>=2.0.0
+
+# Utilities
+tqdm>=4.62.0
+psutil>=5.8.0  # System monitoring
+tabulate>=0.8.0  # Pretty tables
+
+# Testing and Quality (optional but recommended)
+pytest>=7.0.0
+pytest-cov>=3.0.0
+flake8>=4.0.0
+
+# Jupyter support (for analysis notebooks)
+jupyter>=1.0.0
+ipykernel>=6.0.0
+ipywidgets>=7.0.0
+

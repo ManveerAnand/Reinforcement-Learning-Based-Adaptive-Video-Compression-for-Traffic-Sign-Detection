@@ -1,0 +1,60 @@
+# Docker Compose for RL Video Compression
+version: '3.8'
+
+services:
+  # Main training/evaluation service
+  rl_video_compression:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rl_video_compression:latest
+    container_name: rl_video_compression
+    
+    # GPU support
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    
+    # Mount volumes for data persistence
+    volumes:
+      - ./data:/workspace/data
+      - ./models:/workspace/models
+      - ./outputs:/workspace/outputs
+      - ./runs:/workspace/runs
+    
+    # Interactive mode
+    stdin_open: true
+    tty: true
+    
+    # Ports for TensorBoard
+    ports:
+      - "6006:6006"
+    
+    # Resource limits (adjust based on your GPU)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    # Keep container running
+    command: /bin/bash
+
+  # TensorBoard service (optional)
+  tensorboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rl_video_compression:latest
+    container_name: rl_tensorboard
+    
+    volumes:
+      - ./runs:/workspace/runs
+    
+    ports:
+      - "6007:6006"
+    
+    command: tensorboard --logdir=/workspace/runs --host=0.0.0.0 --port=6006

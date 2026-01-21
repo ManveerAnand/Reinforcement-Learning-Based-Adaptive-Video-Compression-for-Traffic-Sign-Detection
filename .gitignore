@@ -1,0 +1,201 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# ============================================
+# DOCUMENTATION & PAPER FILES (NOT FOR GITHUB)
+# ============================================
+# All documentation - keep local only
+docs/
+
+# All LaTeX paper files
+*.tex
+*.bib
+*.bst
+*.cls
+
+# Exclude .txt files except requirements.txt
+*.txt
+!requirements.txt
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.pdf
+introduction_section_updated.txt
+main.tex
+
+# Markdown documentation files (project-specific)
+DOCKER.md
+FAQ.md
+PUBLICATION_CHECKLIST.md
+REPRODUCIBILITY_SUMMARY.md
+REPRODUCIBILITY.md
+
+# Keep only essential readme
+!README.md
+!QUICKSTART.md
+
+# ============================================
+# PARAMSHAVAK (HPC-SPECIFIC - LOCAL ONLY)
+# ============================================
+paramshavak/
+
+# ============================================
+# TRAINING OUTPUTS & RUNS (NOT FOR GITHUB)
+# ============================================
+# All training runs
+runs/
+
+# All experiment outputs
+outputs/
+
+# Training outputs
+work_dirs/
+checkpoints/
+results/
+temp_cacti/work_dirs/
+temp_cacti/checkpoints/
+
+# Logs
+*.log
+logs/
+temp_cacti/work_dirs/*/log/
+training_log.txt
+training_log_*.txt
+
+# TensorBoard
+events.out.tfevents.*
+temp_cacti/work_dirs/*/show/
+
+# Experiment outputs
+experiment_*_package/
+experiment_*_package.zip
+
+# ============================================
+# DATA FILES (LARGE - DO NOT COMMIT)
+# ============================================
+# All data directories
+data/cure-tsd/
+data/yolo_dataset_full/images/
+data/yolo_dataset_full/labels/
+
+# Keep only config files
+!data/yolo_dataset_full/data.yaml
+!data/yolo_dataset_full/train_val_split.txt
+!data/yolo_dataset_full/checkpoint_val.json
+!data/yolo_dataset_full/checkpoint_val_completed.json
+!data/masks/*.npy
+
+# ============================================
+# MODEL FILES (LARGE WEIGHTS)
+# ============================================
+# All model weight files
+models/*.pt
+*.pth
+*.onnx
+*.weights
+
+# ============================================
+# SCRIPTS - KEEP ONLY ESSENTIAL CORE SCRIPTS
+# ============================================
+# Exclude all non-essential scripts
+scripts/check_class_ids.py
+scripts/check_dataset_progress.py
+scripts/create_pipeline_diagram.py
+scripts/download_dataset.py
+scripts/download_models.py
+scripts/evaluate_random_policy.py
+scripts/evaluate_rl_agent.py
+scripts/generate_full_dataset.py
+scripts/generate_plots.py
+scripts/recover_dataset.py
+scripts/reproduce_all.py
+scripts/statistical_tests_baseline_only.py
+scripts/statistical_tests.py
+scripts/test_rl_agent_debug.py
+scripts/validate_remaining_experiments.py
+scripts/visualize_7d_features.py
+scripts/data/
+
+# Keep ONLY critical scripts
+!scripts/verify_installation.py
+!scripts/verify_results.py
+
+# ============================================
+# TRAINING SCRIPTS - EXCLUDE ALL
+# ============================================
+training/
+
+# ============================================
+# DOCKER & DEPLOYMENT FILES
+# ============================================
+# Keep Docker files
+!docker-compose.yml
+!Dockerfile
+
+# Keep PowerShell scripts for automation
+!*.ps1
+
+# ============================================
+# TEMPORARY & BACKUP FILES
+# ============================================
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+temp_cacti_backup/
+*.old
+*.backup
+
+# Environment
+.env
+.env.local
+
+# Large media files
+*.mat
+*.avi
+*.mp4
+*.mkv
+
+# ============================================
+# GIT STUFF
+# ============================================
+.git/
+.gitattributes
