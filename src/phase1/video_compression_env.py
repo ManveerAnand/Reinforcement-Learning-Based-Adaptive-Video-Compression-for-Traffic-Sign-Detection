@@ -264,8 +264,8 @@ class VideoCompressionEnv(gym.Env):
         # Get ground truth for current frame
         gt_labels = self.label_parser.get_frame_labels(self.current_frame)
 
-        # Calculate mAP (simplified)
-        mAP = 1.0 if len(detections) == len(gt_labels) else 0.8
+        # Calculate detection score (binary match: 1.0 if counts match, 0.8 otherwise)
+        detection_score = 1.0 if len(detections) == len(gt_labels) else 0.8
 
         # Bandwidth factor (higher B = more compression)
         bandwidth_factor = self.current_B / self.B_max
@@ -306,9 +306,9 @@ class VideoCompressionEnv(gym.Env):
         complexity_score = np.clip(complexity_score, 0, 1)
 
         # Dynamic weight adjustment:
-        # Complex scenes (high motion/edges): Prefer accuracy (mAP weight high)
+        # Complex scenes (high motion/edges): Prefer accuracy (detection_score weight high)
         # Simple scenes (low motion/edges): Prefer bandwidth (B weight high)
-        mAP_weight = 0.4 + 0.4 * complexity_score      # Range: [0.4, 0.8]
+        detection_weight = 0.4 + 0.4 * complexity_score      # Range: [0.4, 0.8]
         bandwidth_weight = 0.6 - 0.4 * complexity_score  # Range: [0.2, 0.6]
 
         # Additional penalty for using extreme B values inappropriately
@@ -322,7 +322,7 @@ class VideoCompressionEnv(gym.Env):
 
         # Final reward with dynamic weighting
         reward = (
-            mAP_weight * mAP +
+            detection_weight * detection_score +
             bandwidth_weight * bandwidth_factor -
             2.0 * critical_misses -
             B_penalty
@@ -333,7 +333,7 @@ class VideoCompressionEnv(gym.Env):
     def _get_reward_components(self, detections):
         """Get individual reward components for logging"""
         gt_labels = self.label_parser.get_frame_labels(self.current_frame)
-        mAP = 1.0 if len(detections) == len(gt_labels) else 0.8
+        detection_score = 1.0 if len(detections) == len(gt_labels) else 0.8
 
         critical_gt = [l for l in gt_labels if l['is_critical']]
         critical_detected = [
@@ -358,15 +358,15 @@ class VideoCompressionEnv(gym.Env):
             0.2 * (1 - min(1.0, blur_score / 500.0))
         )
 
-        mAP_weight = 0.4 + 0.4 * complexity_score
+        detection_weight = 0.4 + 0.4 * complexity_score
         bandwidth_weight = 0.6 - 0.4 * complexity_score
 
         return {
-            'mAP': mAP,
+            'detection_score': detection_score,
             'bandwidth_factor': self.current_B / self.B_max,
             'critical_misses': critical_misses,
             'complexity_score': complexity_score,
-            'mAP_weight': mAP_weight,
+            'detection_weight': detection_weight,
             'bandwidth_weight': bandwidth_weight,
             'optical_flow': optical_flow,
             'edge_density': edge_density

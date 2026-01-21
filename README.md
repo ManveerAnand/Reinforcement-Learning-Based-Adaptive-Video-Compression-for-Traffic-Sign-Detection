@@ -1,10 +1,12 @@
-# Reinforcement Learning-Based Adaptive Video Compression for Autonomous Driving
+# Reinforcement Learning-Based Adaptive Video Compression for Traffic Sign Detection
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.5.1-red.svg)](https://pytorch.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **Safety-Aware Adaptive Compression for Traffic Sign Detection on Edge Devices**
+
+> **📊 Results Available:** Trained models, performance tables, and comprehensive analysis ready. See [GHOST_DATA_AUDIT_COMPLETE.md](GHOST_DATA_AUDIT_COMPLETE.md) for complete experimental results.
 
 ---
 
@@ -22,15 +24,48 @@ This repository contains the implementation of a reinforcement learning-based ad
 
 ## Table of Contents
 
+- [Quick Start](#quick-start)
 - [Installation](#installation)
 - [Dataset Preparation](#dataset-preparation)
 - [Training](#training)
 - [Evaluation](#evaluation)
 - [Results](#results)
+- [Analysis Tools](#analysis-tools)
 - [Project Structure](#project-structure)
 - [Citation](#citation)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
+
+---
+
+## Quick Start
+
+### Using Pre-Trained Models
+
+**Trained models are available** in the repository:
+- **DQN Agent:** `runs/rl_training_adaptive/best_model_adaptive.pth` (296 KB)
+- **YOLO Model:** `runs/train/yolo_cure_tsd/weights/best.pt` (6.25 MB)
+
+**Generate performance tables:**
+```bash
+python generate_performance_tables.py
+```
+
+**View training metrics:**
+```bash
+python quick_training_summary.py
+```
+
+**Profile latency** (requires test video):
+```bash
+python profile_pipeline_latency.py --video <test_video.mp4>
+```
+
+**Results Available:**
+- 280 videos evaluated (1,680 baseline experiments)
+- Mean detection: 57.64 (RL) vs 57.98 (Fixed B=12)
+- Bandwidth savings: 91.56%
+- Training: 500 episodes, 4.08 hours
 
 ---
 
@@ -266,6 +301,49 @@ The reward function successfully prioritizes critical traffic signs:
 - Critical sign classes: Stop, Yield, No Entry
 - Penalty weight: 2.0× for critical sign misses
 - Result: Agent learns to preserve compression quality when critical signs are present
+
+---
+
+## Analysis Tools
+
+### Performance Analysis
+```bash
+# Generate publication-ready tables
+python generate_performance_tables.py
+
+# Quick training summary
+python quick_training_summary.py
+
+# Comprehensive performance analysis
+python comprehensive_performance_analysis.py
+```
+
+**Outputs:**
+- `outputs/latex_tables.tex` - LaTeX code for paper
+- `outputs/training_summary.txt` - Training statistics
+- Console output with all metrics
+
+### Latency Profiling
+```bash
+# Profile pipeline components
+python profile_pipeline_latency.py --video <test_video.mp4> --runs 100
+```
+
+**Measures:**
+- State extraction (Canny + Optical Flow)
+- DQN inference time
+- SCI compression latency
+- YOLOv8 detection time
+
+**Output:** `outputs/latency_profile.json`
+
+### Available Scripts
+- `generate_performance_tables.py` - ✅ Generates all performance tables
+- `quick_training_summary.py` - ✅ Extracts training metrics
+- `profile_pipeline_latency.py` - Profiles real-time performance
+- `extract_training_metrics.py` - Detailed training analysis
+- `scripts/verify_installation.py` - Verifies environment setup
+- `scripts/verify_results.py` - Validates experimental results
 
 ---
 
