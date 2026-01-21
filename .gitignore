@@ -39,12 +39,15 @@ env/
 # ============================================
 # DOCUMENTATION & PAPER FILES (NOT FOR GITHUB)
 # ============================================
-# All documentation - keep local only
-docs/
+# Documentation - allow essential files
+docs/*
+!docs/PROJECT_DOCUMENTATION.md
+!docs/BENCHMARKING_RESULTS.md
 
-# All LaTeX paper files
+# LaTeX paper files
 *.tex
 *.bib
+!CITATION.bib
 *.bst
 *.cls
 
@@ -71,15 +74,13 @@ REPRODUCIBILITY.md
 !QUICKSTART.md
 
 # ============================================
-# PARAMSHAVAK (HPC-SPECIFIC - LOCAL ONLY)
-# ============================================
-paramshavak/
-
-# ============================================
 # TRAINING OUTPUTS & RUNS (NOT FOR GITHUB)
 # ============================================
 # All training runs
 runs/
+
+# HPC-specific configurations
+paramshavak/
 
 # All experiment outputs
 outputs/
