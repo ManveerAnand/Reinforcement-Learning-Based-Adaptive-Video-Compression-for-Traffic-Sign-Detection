@@ -410,7 +410,7 @@ If you use this code or methodology in your research, please cite:
   publisher = {GitHub},
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/ManveerAnand/Adaptive_video_compression}},
-  note = {CS307 - Advanced Topics in Computer Vision}
+  note = {CS307 - Inntrodution to AI}
 }
 ```
 
@@ -434,7 +434,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact
 
 **Manveer Anand**  
-CS307 - Advanced Topics in Computer Vision  
+CS307 - Introdution to AI  
 GitHub: [@ManveerAnand](https://github.com/ManveerAnand)
 
 For questions or collaboration inquiries, please open an issue on the GitHub repository.
