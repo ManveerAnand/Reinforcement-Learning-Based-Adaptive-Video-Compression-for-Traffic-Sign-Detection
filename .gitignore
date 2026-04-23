@@ -44,12 +44,8 @@ docs/*
 !docs/PROJECT_DOCUMENTATION.md
 !docs/BENCHMARKING_RESULTS.md
 
-# LaTeX paper files
-*.tex
-*.bib
-!CITATION.bib
-*.bst
-*.cls
+# LaTeX paper files - allow paper/ directory
+!paper/
 
 # Exclude .txt files except requirements.txt
 *.txt
@@ -142,6 +138,8 @@ scripts/download_dataset.py
 scripts/download_models.py
 scripts/evaluate_random_policy.py
 scripts/evaluate_rl_agent.py
+!scripts/evaluate_rl_agent.py
+!scripts/evaluate_fixed_B.py
 scripts/generate_full_dataset.py
 scripts/generate_plots.py
 scripts/recover_dataset.py
@@ -160,7 +158,14 @@ scripts/data/
 # ============================================
 # TRAINING SCRIPTS - EXCLUDE ALL
 # ============================================
-training/
+# training/ - now included (essential scripts)
+!training/train_yolo_v2.py
+!training/train_yolo_v2_960px.py
+!training/train_yolo_local.py
+!training/train_rl_agent_adaptive.py
+!training/validate_yolo.py
+training/__pycache__/
+training/*.log
 
 # ============================================
 # DOCKER & DEPLOYMENT FILES

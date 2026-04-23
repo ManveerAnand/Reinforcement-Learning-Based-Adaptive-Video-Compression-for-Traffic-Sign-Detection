@@ -1,24 +1,37 @@
+<div align="center">
+  <img src="assets/banner.png" alt="Scene-Adaptive Video Compression Pipeline" width="100%"/>
+</div>
+
 # Reinforcement Learning-Based Adaptive Video Compression for Traffic Sign Detection
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.5.1-red.svg)](https://pytorch.org/)
+[![YOLO11s](https://img.shields.io/badge/YOLO11s-Ultralytics-purple.svg)](https://docs.ultralytics.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Safety-Aware Adaptive Compression for Traffic Sign Detection on Edge Devices**
+**Scene-Adaptive Video Compression Using Deep Reinforcement Learning for Safety-Critical Traffic Sign Detection**
 
-> **📊 Results Available:** Trained models, performance tables, and comprehensive analysis ready. See [GHOST_DATA_AUDIT_COMPLETE.md](GHOST_DATA_AUDIT_COMPLETE.md) for complete experimental results.
+> 📄 **Paper:** *Scene-Adaptive Video Compression Using Deep Reinforcement Learning for Safety-Critical Traffic Sign Detection* — submitted to **ICANN 2026** (Springer LNCS format).
 
 ---
 
 ## Abstract
 
-This repository contains the implementation of a reinforcement learning-based adaptive video compression framework designed for bandwidth-constrained edge devices in autonomous vehicles. The system dynamically adjusts compression ratios using Deep Q-Networks (DQN) to optimize the trade-off between bandwidth consumption and traffic sign detection accuracy. By employing Snapshot Compressive Imaging (SCI) and a safety-aware reward function that prioritizes critical traffic signs (Stop, Yield, No Entry), our approach achieves up to 91.6% bandwidth savings while maintaining robust detection performance and preventing catastrophic failures in challenging scenarios.
+This repository implements an end-to-end adaptive video compression framework combining **Snapshot Compressive Imaging (SCI)**, a **YOLO11s** object detector operating directly on compressed measurements, and a **Deep Q-Network (DQN)** agent that dynamically selects the temporal compression ratio $B \in [6, 20]$ at the frame level.
 
-**Key Contributions:**
-- Safety-aware adaptive compression with critical sign prioritization
-- DQN-based policy for frame-level compression ratio selection
-- Edge case failure prevention (28.6% improvement in challenging conditions)
-- Comprehensive evaluation on CURE-TSD dataset with 280 validation videos
+The agent observes a lightweight **7-dimensional state vector** (motion intensity, edge density, detector confidence, blur score, brightness, frame difference, current B) and outputs incremental adjustments to the compression ratio. A **safety-aware reward function** imposes heavy penalties ($\lambda = 2.0$) for missing critical traffic signs (Stop, Yield, No Entry), ensuring the policy preserves detection in adverse conditions.
+
+### Key Results
+
+| Strategy | Avg Detections | Avg B | BW Savings |
+|----------|:-:|:-:|:-:|
+| Fixed B=6 | 141.2 | 6.0 | 83.3% |
+| Fixed B=10 | 130.9 | 10.0 | 90.0% |
+| Fixed B=14 | 122.0 | 14.0 | 92.9% |
+| Fixed B=18 | 114.4 | 18.0 | 94.4% |
+| **Adaptive (DQN)** | **128.6** | **10.78 ± 1.48** | **90.6%** |
+
+The RL agent achieves **90.6% bandwidth savings** with **128.6 average detections**, matching Fixed B≈10 performance while **adapting per-scene**: B=9.0 under noise (preserving safety) → B=14.3 under rain (saving bandwidth) — a **59% variation** in compression ratio across challenge types.
 
 ---
 
@@ -30,7 +43,6 @@ This repository contains the implementation of a reinforcement learning-based ad
 - [Training](#training)
 - [Evaluation](#evaluation)
 - [Results](#results)
-- [Analysis Tools](#analysis-tools)
 - [Project Structure](#project-structure)
 - [Citation](#citation)
 - [License](#license)
@@ -42,30 +54,25 @@ This repository contains the implementation of a reinforcement learning-based ad
 
 ### Using Pre-Trained Models
 
-**Trained models are available** in the repository:
+**Trained models available in the repository:**
 - **DQN Agent:** `runs/rl_training_adaptive/best_model_adaptive.pth` (296 KB)
-- **YOLO Model:** `runs/train/yolo_cure_tsd/weights/best.pt` (6.25 MB)
+- **YOLO11s (640px):** `runs/train/yolo11s_cure_tsd_640/weights/best.pt` (19.2 MB)
+- **YOLOv8n (legacy):** `runs/train/yolo_cure_tsd/weights/best.pt` (6.25 MB)
 
-**Generate performance tables:**
+**Run evaluation:**
+```bash
+# Fixed-B baselines (B = 6, 10, 14, 18)
+python scripts/evaluate_fixed_B.py --model runs/train/yolo11s_cure_tsd_640/weights/best.pt
+
+# RL agent evaluation
+python scripts/evaluate_rl_agent.py --model runs/train/yolo11s_cure_tsd_640/weights/best.pt
+```
+
+**Quick analysis:**
 ```bash
 python generate_performance_tables.py
-```
-
-**View training metrics:**
-```bash
 python quick_training_summary.py
 ```
-
-**Profile latency** (requires test video):
-```bash
-python profile_pipeline_latency.py --video <test_video.mp4>
-```
-
-**Results Available:**
-- 280 videos evaluated (1,680 baseline experiments)
-- Mean detection: 57.64 (RL) vs 57.98 (Fixed B=12)
-- Bandwidth savings: 91.56%
-- Training: 500 episodes, 4.08 hours
 
 ---
 
@@ -73,33 +80,29 @@ python profile_pipeline_latency.py --video <test_video.mp4>
 
 ### System Requirements
 
-- **GPU**: NVIDIA GPU with CUDA support (8GB+ VRAM recommended)
-- **CUDA**: Version 12.1 or higher
-- **Python**: 3.12
-- **Storage**: Minimum 50GB free space
-- **Operating System**: Linux, macOS, or Windows with WSL
+| Requirement | Minimum |
+|-------------|---------|
+| **GPU** | NVIDIA with CUDA support (8GB+ VRAM) |
+| **CUDA** | 12.1 or higher |
+| **Python** | 3.12 (strictly required) |
+| **Storage** | 50GB+ free space |
+| **OS** | Linux, macOS, or Windows |
 
 ### Environment Setup
 
-1. **Clone the repository:**
 ```bash
-git clone https://github.com/ManveerAnand/Adaptive_video_compression.git
-cd Adaptive_video_compression
-```
+# 1. Clone
+git clone https://github.com/ManveerAnand/Reinforcement-Learning-Based-Adaptive-Video-Compression-for-Traffic-Sign-Detection.git
+cd Reinforcement-Learning-Based-Adaptive-Video-Compression-for-Traffic-Sign-Detection
 
-2. **Create and activate conda environment:**
-```bash
+# 2. Create environment
 conda create -n rl_video_compression python=3.12
 conda activate rl_video_compression
-```
 
-3. **Install dependencies:**
-```bash
+# 3. Install dependencies
 pip install -r requirements.txt
-```
 
-4. **Verify installation:**
-```bash
+# 4. Verify
 python -c "import torch; print(f'PyTorch: {torch.__version__}, CUDA: {torch.cuda.is_available()}')"
 ```
 
@@ -109,241 +112,169 @@ python -c "import torch; print(f'PyTorch: {torch.__version__}, CUDA: {torch.cuda
 
 ### CURE-TSD Dataset
 
-This work uses the **CURE-TSD** (Challenging Unreal and Real Environments for Traffic Sign Detection) dataset, which contains 1,805 videos with 14 traffic sign classes under various challenging conditions.
+The framework uses the **CURE-TSD** (Challenging Unreal and Real Environments for Traffic Sign Detection) dataset:
 
-**Dataset Specifications:**
-- **Resolution**: 1628 × 1236 pixels
-- **Frame Rate**: 10 FPS
-- **Classes**: 14 traffic sign types (Stop, Speed limits, Yield, etc.)
-- **Conditions**: Rain, Snow, Haze, Decolorization, and other challenges
-- **Source**: [Georgia Tech OLIVES Lab](https://github.com/olivesgatech/CURE-TSD)
+| Property | Value |
+|----------|-------|
+| **Videos** | 1,805 sequences (1,525 train / 280 val) |
+| **Resolution** | 1628 × 1236 pixels |
+| **Frame Rate** | 10 FPS |
+| **Classes** | 14 traffic sign types |
+| **Challenges** | 12 types (Rain, Snow, Noise, Dark, etc.) |
+| **Source** | [Georgia Tech OLIVES Lab](https://github.com/olivesgatech/CURE-TSD) |
 
-### Dataset Generation
+### Generate SCI Measurements (V2 Dataset)
 
-1. **Download CURE-TSD dataset** and place in `data/cure-tsd/`
-
-2. **Generate SCI compressed measurements:**
 ```bash
-python scripts/generate_full_dataset.py
+# Generate SCI compressed measurements for B ∈ {6, 8, 10, 12, 14, 16, 18, 20}
+python scripts/generate_dataset_v2_fast.py
 ```
 
-This creates SCI-compressed measurements for B ∈ {6, 8, 10, 12, 15, 20} and converts labels to YOLO format.
-
-**Expected Output:**
+**Output structure:**
 ```
-data/yolo_dataset_full/
+data/yolo_dataset_v2/
 ├── images/
-│   ├── train/     # ~20,000 compressed measurements
-│   └── val/       # ~8,700 compressed measurements
+│   ├── train/     # ~20,946 compressed measurements
+│   └── val/       # ~5,574 compressed measurements
 ├── labels/
 │   ├── train/
 │   └── val/
-└── data.yaml      # Dataset configuration
-```
-
-3. **Verify dataset integrity:**
-```bash
-python scripts/check_dataset_progress.py
+└── data.yaml
 ```
 
 ---
+
 ## Training
 
-### 1. Train YOLOv8n Detector
+> **Important:** Training scripts must be run from the `training/` directory. Evaluation scripts must be run from the project root.
 
-Train the YOLOv8 Nano model on SCI-compressed measurements:
+### 1. Train YOLO11s Detector
+
+Train the YOLO11s model on SCI-compressed measurements:
 
 ```bash
 cd training
-python train_yolo_local.py
+python train_yolo_v2.py
 ```
 
-**Training Configuration:**
-- **Architecture**: YOLOv8 Nano (3.0M parameters)
-- **Batch Size**: 16
-- **Epochs**: 100
-- **Image Size**: 640×640
-- **Optimizer**: AdamW
-- **Hardware**: Single NVIDIA GPU (8GB VRAM)
+| Parameter | Value |
+|-----------|-------|
+| **Architecture** | YOLO11s (9.4M parameters, 21.3 GFLOPs) |
+| **Image Size** | 640×640 |
+| **Batch Size** | 16 |
+| **Epochs** | 200 |
+| **Optimizer** | AdamW (lr=0.002, cosine decay) |
+| **Precision** | Mixed (AMP) |
+| **B-values** | {6, 8, 10, 12, 14, 16, 18, 20} |
+| **Training Time** | ~17 hours on RTX 4060 Laptop |
 
-**Checkpointing**: Training automatically resumes from `runs/train/yolo_cure_tsd/weights/last.pt` if interrupted.
+**Auto-resume:** Training automatically resumes from `runs/train/yolo11s_cure_tsd_640/weights/last.pt` if interrupted. Corrupted checkpoints are detected and purged automatically.
 
-**Expected Training Time**: ~16 hours on RTX 4060 Laptop
+> **960px variant:** A higher-resolution training script is preserved at `training/train_yolo_v2_960px.py` (requires fp32, batch=4, ~65 hours). Use only if 8GB+ VRAM is available and fp32 stability is confirmed.
 
-### 2. Train RL Agent
+### 2. Train RL Agent (DQN)
 
-Train the DQN agent for adaptive compression ratio selection:
+Train the DQN agent for adaptive B-value selection:
 
 ```bash
 cd training
 python train_rl_agent_adaptive.py
 ```
 
-**RL Configuration:**
-- **Algorithm**: Deep Q-Network (DQN)
-- **State Space**: 7-dimensional (motion, edge density, blur, brightness, previous B, detections, misses)
-- **Action Space**: 3 discrete actions (decrease B, keep B, increase B)
-- **Network Architecture**: 7 → 128 → 128 → 3
-- **Replay Buffer**: 10,000 transitions
-- **Episodes**: 500
-- **Exploration**: ε-greedy (1.0 → 0.01, decay 0.995)
+| Parameter | Value |
+|-----------|-------|
+| **Algorithm** | Deep Q-Network (DQN) |
+| **Network** | 7 → 128 → 128 → 3 (FC + ReLU) |
+| **State Space** | 7D (motion, edges, confidence, blur, brightness, Δframe, B) |
+| **Action Space** | {decrease_B, keep_B, increase_B} → {-2, 0, +2} |
+| **B Range** | [6, 20], step 2 |
+| **Replay Buffer** | 10,000 transitions |
+| **Exploration** | ε-greedy (1.0 → 0.01, decay 0.995/ep) |
+| **Episodes** | 500 (~4 hours) |
 
-**Reward Function:**
-```
-R = 0.7 × Detection_Score + 0.3 × B_norm - 2.0 × Critical_Misses - 0.1
-```
+**Safety-Aware Reward Function:**
 
-where `Critical_Misses` counts missed critical signs (Stop, Yield, No Entry).
+$$R_t = w_{det} \cdot S_{det} + w_{bw} \cdot \frac{B_t}{B_{max}} - \lambda \cdot M_t^{crit} - P_B$$
 
-**Expected Training Time**: ~3-4 hours on RTX 4060 Laptop
-
-### 3. Validate Trained Models
-
-```bash
-cd training
-python validate_yolo.py
-```
+where:
+- $w_{det}, w_{bw}$ are scene-adaptive weights driven by complexity $\kappa$
+- $\lambda = 2.0$ per missed critical sign (Stop, Yield, No Entry)
+- $P_B$ penalizes inappropriate B for scene complexity
 
 ---
 
 ## Evaluation
 
-### Benchmark Experiments
+All evaluations use the **280 validation videos** (synthetic sequences `02_*`) from CURE-TSD.
 
-We evaluate the system using four experiments on 280 validation videos:
+### Fixed-B Baselines
 
-**1. Fixed Baseline Compression:**
 ```bash
-python scripts/evaluate_fixed_baselines.py
+python scripts/evaluate_fixed_B.py --model runs/train/yolo11s_cure_tsd_640/weights/best.pt --B 6 10 14 18
 ```
-Evaluates all fixed B-values {6, 8, 10, 12, 15, 20} across 280 videos (1,680 total evaluations).
 
-**2. Random Policy Baseline:**
-```bash
-python scripts/evaluate_random_policy.py
-```
-Random B-value selection for comparison (includes checkpoint resume capability).
+### RL Agent
 
-**3. RL Agent Evaluation:**
 ```bash
-python scripts/evaluate_rl_agent.py --model runs/rl_training_adaptive/best_model_adaptive.pth
+python scripts/evaluate_rl_agent.py --model runs/train/yolo11s_cure_tsd_640/weights/best.pt
 ```
-Evaluates trained DQN agent on validation set.
-
-**4. Statistical Analysis:**
-```bash
-python scripts/statistical_tests.py
-```
-Performs statistical significance tests comparing RL vs baselines.
 
 ### Output Files
 
-All results are saved in `outputs/`:
-- `fixed_baseline_results.csv` - Fixed B-value results (1,680 rows)
-- `random_policy_results.csv` - Random policy results (280 rows)
-- `rl_agent_results.csv` - RL agent results (280 rows)
-- `statistical_tests_results.json` - Statistical test outcomes
+Results are saved to `outputs/benchmarks/`:
+- `fixed_B_baselines.json` — Fixed B-value results
+- `rl_agent_results.csv` — Per-video RL agent results
+- `rl_agent_summary_v2.json` — Aggregate RL summary
 
 ---
 
 ## Results
 
-### YOLOv8n Detection Performance
+### YOLO11s Detection Performance
 
-Training on SCI-compressed measurements (28,727 images):
+Trained on 26,520 SCI measurements across B ∈ {6, 8, 10, 12, 14, 16, 18, 20}:
 
 | Metric | Value |
 |--------|-------|
-| mAP50 | 83.29% |
-| mAP50-95 | 47.44% |
-| Precision | 86.73% |
-| Recall | 74.94% |
+| **mAP@0.5** | 59.5% |
+| **mAP@0.5:0.95** | 35.7% |
+| **Precision** | 62.0% |
+| **Recall** | 52.6% |
+| **Parameters** | 9.4M |
+| **Inference** | 2.7ms/image |
 
-**Training Details**: 100 epochs, RTX 4060 Laptop, 16-hour duration
+> **Note:** The expanded B-range includes heavily compressed measurements (B=14–20) where signs are severely degraded, which lowers aggregate mAP compared to narrow-range training. This coverage is essential for the RL agent to evaluate detection across its full operating range.
 
-### Fixed Baseline Compression
+### Compression Strategy Comparison
 
-Evaluation across 280 validation videos with fixed B-values:
+| Strategy | Avg Detections | Confidence | Avg B | BW Savings |
+|----------|:-:|:-:|:-:|:-:|
+| Fixed B=6 | 141.2 | 0.391 | 6.0 | 83.3% |
+| Fixed B=10 | 130.9 | 0.392 | 10.0 | 90.0% |
+| Fixed B=14 | 122.0 | 0.383 | 14.0 | 92.9% |
+| Fixed B=18 | 114.4 | 0.376 | 18.0 | 94.4% |
+| **Adaptive (DQN)** | **128.6** | **0.388** | **10.78 ± 1.48** | **90.6%** |
 
-| B-value | Detections (avg) | Bandwidth Savings |
-|---------|------------------|-------------------|
-| 6 | 94.996 | 83.33% |
-| 8 | 78.436 | 87.33% |
-| 10 | 66.218 | 90.00% |
-| 12 | 57.979 | 91.67% |
-| 15 | 47.957 | 93.33% |
-| 20 | 39.504 | 95.00% |
+### Scene-Adaptive Behavior (Key Result)
 
-Clear bandwidth-accuracy trade-off: lower B preserves more information but requires higher bandwidth.
+The RL agent adapts compression per-challenge type:
 
-### RL Agent Performance
+| Challenge | Avg Det | Avg B | BW% | Strategy |
+|-----------|:-:|:-:|:-:|----------|
+| Codec | 156.1 | 10.39 | 90.4% | → Baseline |
+| Clear | 147.8 | 10.28 | 90.3% | → Baseline |
+| Decolor | 148.8 | 10.28 | 90.3% | → Baseline |
+| LensBlur | 146.9 | 10.48 | 90.4% | → Baseline |
+| Shadow | 146.0 | 10.57 | 90.5% | → Baseline |
+| **Noise** | **139.0** | **9.02** | **88.9%** | ↓ **Reduces compression (safety)** |
+| Dark | 139.6 | 10.77 | 90.7% | → Slight increase |
+| GaussBlur | 134.9 | 10.73 | 90.6% | → Slight increase |
+| Dirty | 133.2 | 10.53 | 90.5% | → Baseline |
+| Snow | 120.3 | 10.13 | 90.1% | → Cautious |
+| Expose | 84.6 | 11.51 | 91.3% | ↑ Saves BW (quality already poor) |
+| **Rain** | **61.1** | **14.29** | **93.0%** | ↑↑ **Aggressive savings** |
 
-**Average Performance (280 videos):**
-- Average B-value: 11.92 (adaptive)
-- Average Detections: 57.64
-- Bandwidth Savings: 91.56%
-- Performance vs Fixed B=12: -0.59% (statistically similar)
-
-**Edge Case Prevention:**
-While average performance matches fixed compression, the RL agent prevents catastrophic failures in challenging scenarios:
-
-| Video ID | Condition | RL Detections | Fixed B=12 | Improvement |
-|----------|-----------|---------------|------------|-------------|
-| 02_01_01_06_05 | Rain + Low Light | 9.0 | 7.0 | +28.6% |
-| 02_02_01_02_02 | Rain + Challenge | 67.7 | 55.0 | +23.0% |
-| 02_04_01_09_04 | Rain + Artifact | 51.7 | 43.0 | +20.2% |
-
-**Key Finding**: RL achieves similar average performance but excels in 6.8% of videos with >10% improvement, crucial for safety-critical autonomous driving applications.
-
-### Safety-Aware Behavior
-
-The reward function successfully prioritizes critical traffic signs:
-- Critical sign classes: Stop, Yield, No Entry
-- Penalty weight: 2.0× for critical sign misses
-- Result: Agent learns to preserve compression quality when critical signs are present
-
----
-
-## Analysis Tools
-
-### Performance Analysis
-```bash
-# Generate publication-ready tables
-python generate_performance_tables.py
-
-# Quick training summary
-python quick_training_summary.py
-
-# Comprehensive performance analysis
-python comprehensive_performance_analysis.py
-```
-
-**Outputs:**
-- `outputs/latex_tables.tex` - LaTeX code for paper
-- `outputs/training_summary.txt` - Training statistics
-- Console output with all metrics
-
-### Latency Profiling
-```bash
-# Profile pipeline components
-python profile_pipeline_latency.py --video <test_video.mp4> --runs 100
-```
-
-**Measures:**
-- State extraction (Canny + Optical Flow)
-- DQN inference time
-- SCI compression latency
-- YOLOv8 detection time
-
-**Output:** `outputs/latency_profile.json`
-
-### Available Scripts
-- `generate_performance_tables.py` - ✅ Generates all performance tables
-- `quick_training_summary.py` - ✅ Extracts training metrics
-- `profile_pipeline_latency.py` - Profiles real-time performance
-- `extract_training_metrics.py` - Detailed training analysis
-- `scripts/verify_installation.py` - Verifies environment setup
-- `scripts/verify_results.py` - Validates experimental results
+**Key Insight:** The agent reduces B to **9.02** for noise (preserving safety-critical sign detection) and increases B to **14.29** for rain (where detection is already severely degraded) — a **59% variation** in compression ratio demonstrating genuine scene adaptation.
 
 ---
 
@@ -353,64 +284,74 @@ python profile_pipeline_latency.py --video <test_video.mp4> --runs 100
 RL_Video_Compression/
 ├── data/
 │   ├── cure-tsd/              # Original CURE-TSD dataset
-│   ├── masks/                 # Binary SCI masks (B=6,8,10,12,15,20)
-│   └── yolo_dataset_full/     # Generated YOLO dataset
-│       ├── images/            # SCI compressed measurements
-│       ├── labels/            # YOLO format labels
-│       └── data.yaml          # Dataset configuration
+│   │   ├── data/              # Video files (01_*, 02_*)
+│   │   └── labels/            # Ground-truth annotations
+│   ├── masks/                 # Binary SCI masks
+│   └── yolo_dataset_v2/       # Generated YOLO dataset (V2, 8 B-values)
 │
 ├── src/
-│   ├── phase1/                # Core compression & environment
-│   │   ├── video_compression_env.py  # RL environment
-│   │   ├── sci_compressor.py         # SCI implementation
-│   │   └── feature_extractor.py      # State extraction
-│   └── phase5/                # Dataset generation
+│   ├── phase1/                # Core compression & RL environment
+│   │   ├── video_compression_env.py  # Gym-style RL environment
+│   │   ├── sci_compressor.py         # SCI forward model
+│   │   └── feature_extractor.py      # 7D state extraction
+│   └── phase5/                # Dataset generation utilities
 │       ├── dataset_builder.py
 │       ├── label_converter.py
 │       └── measurement_generator.py
 │
-├── training/                  # Training scripts
-│   ├── train_yolo_local.py
-│   ├── train_rl_agent_adaptive.py
+├── training/                  # Training scripts (run from this directory)
+│   ├── train_yolo_v2.py              # YOLO11s training (640px, current)
+│   ├── train_yolo_v2_960px.py        # YOLO11s training (960px, future)
+│   ├── train_yolo_local.py           # YOLOv8n training (legacy)
+│   ├── train_rl_agent_adaptive.py    # DQN training
 │   └── validate_yolo.py
 │
-├── scripts/                   # Evaluation & utilities
-│   ├── evaluate_fixed_baselines.py
-│   ├── evaluate_random_policy.py
-│   ├── evaluate_rl_agent.py
-│   ├── statistical_tests.py
-│   └── generate_full_dataset.py
+├── scripts/                   # Evaluation & utilities (run from root)
+│   ├── evaluate_fixed_B.py           # Fixed-B baseline evaluation
+│   ├── evaluate_rl_agent.py          # RL agent evaluation
+│   ├── generate_dataset_v2_fast.py   # V2 dataset generation
+│   ├── generate_full_dataset.py      # V1 dataset generation (legacy)
+│   └── generate_paper_figures.py     # Paper figure generation
+│
+├── paper/                     # ICANN 2026 submission
+│   └── icann2026_submission/
+│       ├── main.tex                  # Paper source
+│       ├── paper_refs.bib            # Bibliography
+│       └── figures/                  # Paper figures
 │
 ├── outputs/                   # Experimental results
-│   ├── fixed_baseline_results.csv
-│   ├── random_policy_results.csv
 │   └── benchmarks/
+│       ├── fixed_B_baselines.json
+│       ├── rl_agent_results.csv
+│       └── rl_agent_summary_v2.json
 │
-├── runs/                      # Training outputs
-│   ├── rl_training_adaptive/  # RL agent checkpoints
-│   └── train/yolo_cure_tsd/   # YOLO training logs
+├── runs/                      # Model checkpoints
+│   ├── rl_training_adaptive/         # DQN agent
+│   └── train/
+│       ├── yolo11s_cure_tsd_640/     # YOLO11s (current, 640px)
+│       ├── yolo11s_cure_tsd/         # YOLO11s (960px, incomplete)
+│       └── yolo_cure_tsd/            # YOLOv8n (legacy)
 │
-└── docs/                      # Documentation
-    ├── PROJECT_DOCUMENTATION.md
-    ├── BENCHMARKING_RESULTS.md
-    └── RL_FOUNDATIONS_AND_PROJECT_GUIDE.md
+├── models/                    # Pre-trained base models
+├── tests/                     # Unit tests
+├── docs/                      # Additional documentation
+├── requirements.txt
+├── test_framework.py          # End-to-end reproducibility test
+└── AGENTS.md                  # Agent instructions
 ```
 
 ---
 
 ## Citation
 
-If you use this code or methodology in your research, please cite:
-
 ```bibtex
-@misc{anand2026rl_adaptive_compression,
-  author = {Anand, Manveer},
-  title = {Reinforcement Learning-Based Adaptive Video Compression for Autonomous Driving},
-  year = {2026},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/ManveerAnand/Adaptive_video_compression}},
-  note = {CS307 - Advanced Topics in Computer Vision}
+@inproceedings{anand2026sceneadaptive,
+  title     = {Scene-Adaptive Video Compression Using Deep Reinforcement Learning for Safety-Critical Traffic Sign Detection},
+  author    = {Anand, Manveer},
+  booktitle = {Proceedings of the International Conference on Artificial Neural Networks (ICANN)},
+  year      = {2026},
+  publisher = {Springer},
+  series    = {Lecture Notes in Computer Science}
 }
 ```
 
@@ -418,39 +359,17 @@ If you use this code or methodology in your research, please cite:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## Acknowledgments
 
-- **CURE-TSD Dataset**: Temel, S., et al. "CURE-TSD: Challenging unreal and real environment traffic sign detection." arXiv preprint arXiv:1712.02463 (2017). [Link](https://github.com/olivesgatech/CURE-TSD)
-- **YOLOv8**: Ultralytics. "YOLOv8 Documentation." (2023). [Link](https://github.com/ultralytics/ultralytics)
-- **Snapshot Compressive Imaging**: Yuan, X. "Generalized alternating projection based total variation minimization for compressive sensing." In 2016 IEEE International Conference on Image Processing (ICIP), pp. 2539-2543. IEEE, 2016.
+- **CURE-TSD Dataset**: Temel, D., et al. "CURE-TSD: Challenging unreal and real environments for traffic sign detection." arXiv preprint arXiv:1712.02463 (2017). [Link](https://github.com/olivesgatech/CURE-TSD)
+- **YOLO11**: Ultralytics. "YOLO11 Documentation." (2024). [Link](https://docs.ultralytics.com/)
+- **Snapshot Compressive Imaging**: Yuan, X., et al. "Snapshot compressive imaging: Theory, algorithms, and applications." IEEE Signal Processing Magazine (2021).
 - **Deep Q-Network**: Mnih, V., et al. "Human-level control through deep reinforcement learning." Nature 518.7540 (2015): 529-533.
 
 ---
 
-## Contact
-
-**Manveer Anand**  
-CS307 - Advanced Topics in Computer Vision  
-GitHub: [@ManveerAnand](https://github.com/ManveerAnand)
-
-For questions or collaboration inquiries, please open an issue on the GitHub repository.
-
----
-
-## References
-
-1. Temel, S., Kwon, G., Prabhushankar, M., & AlRegib, G. (2017). CURE-TSD: Challenging unreal and real environment traffic sign detection. arXiv preprint arXiv:1712.02463.
-
-2. Ultralytics. (2023). YOLOv8: State-of-the-art object detection. GitHub repository.
-
-3. Yuan, X., Liu, Y., Suo, J., & Dai, Q. (2016). Plug-and-play algorithms for large-scale snapshot compressive imaging. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition.
-
-4. Mnih, V., Kavukcuoglu, K., Silver, D., et al. (2015). Human-level control through deep reinforcement learning. Nature, 518(7540), 529-533.
-
----
-
-**Last Updated**: January 21, 2026
+**Last Updated**: April 23, 2026

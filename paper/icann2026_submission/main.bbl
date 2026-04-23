@@ -1,0 +1,70 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{cheng2020learned}
+Cheng, Z., Sun, H., Takeuchi, M., Katto, J.: Learned image compression with
+  discretized {Gaussian} mixture likelihoods and attention modules. In: Proc.\
+  IEEE/CVF Conf.\ Computer Vision and Pattern Recognition (CVPR). pp.
+  7939--7948 (2020)
+
+\bibitem{jocher2023yolov8}
+Jocher, G., Chaurasia, A., Qiu, J.: {Ultralytics YOLOv8}.
+  \url{https://github.com/ultralytics/ultralytics} (2023)
+
+\bibitem{liu2019cacti}
+Liu, Y., Yuan, X., Suo, J., Brady, D.J., Dai, Q.: Rank minimization for
+  snapshot compressive imaging. IEEE Trans.\ Pattern Anal.\ Machine Intell.
+  \textbf{41}(12),  2990--3006 (2019)
+
+\bibitem{lu2021rlsci}
+Lu, S., Yuan, X., Katsaggelos, A.K., Shi, W.: Reinforcement learning for
+  adaptive video compressive sensing. ACM Transactions on Intelligent Systems
+  and Technology  \textbf{14}(5),  1--21 (2023). \doi{10.1145/3608479}
+
+\bibitem{ma2019deep}
+Ma, J., Liu, X.Y., Shou, Z., Yuan, X.: Deep tensor {ADMM-Net} for snapshot
+  compressive imaging. In: Proc.\ IEEE/CVF Int.\ Conf.\ Computer Vision (ICCV).
+  pp. 10223--10232 (2019)
+
+\bibitem{mao2017pensieve}
+Mao, H., Netravali, R., Alizadeh, M.: Neural adaptive video streaming with
+  {Pensieve}. In: Proc.\ ACM SIGCOMM. pp. 197--210 (2017)
+
+\bibitem{mnih2015dqn}
+Mnih, V., Kavukcuoglu, K., Silver, D., et~al.: Human-level control through deep
+  reinforcement learning. Nature  \textbf{518}(7540),  529--533 (2015)
+
+\bibitem{redmon2016yolo}
+Redmon, J., Divvala, S., Girshick, R., Farhadi, A.: You only look once:
+  Unified, real-time object detection. In: Proc.\ IEEE Conf.\ Computer Vision
+  and Pattern Recognition (CVPR). pp. 779--788 (2016)
+
+\bibitem{stallkamp2012gtsrb}
+Stallkamp, J., Schlipsing, M., Salmen, J., Igel, C.: Man vs.\ computer:
+  Benchmarking machine learning algorithms for traffic sign recognition. Neural
+  Networks  \textbf{32},  323--332 (2012)
+
+\bibitem{sullivan2012hevc}
+Sullivan, G.J., Ohm, J.R., Han, W.J., Wiegand, T.: Overview of the {High
+  Efficiency Video Coding (HEVC)} standard. IEEE Trans.\ Circuits and Systems
+  for Video Technology  \textbf{22}(12),  1649--1668 (2012)
+
+\bibitem{temel2017curetsd}
+Temel, D., Chen, M.H., AlRegib, G.: {CURE-TSD}: Challenging unreal and real
+  environments for traffic sign detection. In: Proc.\ IEEE Int.\ Conf.\ Big
+  Data (BigData) Workshop. pp. 248--254 (2017)
+
+\bibitem{temel2020tits}
+Temel, D., Chen, M.H., AlRegib, G.: Traffic sign detection under challenging
+  conditions: A deeper look into performance variations and spectral
+  characteristics. IEEE Transactions on Intelligent Transportation Systems pp.
+  1--11 (2020). \doi{10.1109/TITS.2019.2931429}
+
+\bibitem{yuan2021sci}
+Yuan, X., Brady, D.J., Katsaggelos, A.K.: Snapshot compressive imaging: Theory,
+  algorithms, and applications. IEEE Signal Processing Magazine
+  \textbf{38}(2),  65--88 (2021)
+
+\end{thebibliography}
